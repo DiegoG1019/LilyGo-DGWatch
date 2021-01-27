@@ -46,14 +46,17 @@ bool LoadSystemStatus(){
 }
 
 void SaveSystemStatus() {
-	Log::Information("Attempting to save System_Status data to Flash Memory", DGWatch_ino, 47);
+	Log::Information("Attempting to save System_Status data to Flash Memory", DGWatch_ino, __LINE__);
+	if (!System_Status.Edited) {
+		Log::Information("System_Settings has not been edited, no need to save.", DGWatch_ino, __LINE__);
+		return;
+	}
 	System_Status.CorrectlyShutDown = true;
 	ESP.flashWrite(reinterpret_cast<uintptr_t>(&System_Status_FLASH), reinterpret_cast<uint32_t*>(&System_Status), sizeof(System_Status_t));
-	Log::Information("Succesfully saved System_Status data to Flash Memory", DGWatch_ino, 43);
+	Log::Information("Succesfully saved System_Status data to Flash Memory", DGWatch_ino, __LINE__);
 }
 
 void ForceShutDown() {
-	SaveSystemStatus();
 	Log::ForceFlush();
 	abort();
 };
@@ -61,7 +64,7 @@ void ForceShutDown() {
 void ShutDown() {
 	SaveSystemStatus();
 	Log::ForceFlush();
-	ESP.deepSleep()
+	ESP.deepSleep(UINT32_MAX);
 };
 
 constexpr const char* DGWatch_ino = "DGWatch.ino";
@@ -70,37 +73,36 @@ int main() {
 	//-------Initialization
 
 	startlog();
-	Log::Information("Initialized Logger, Initializing DGWatch system", DGWatch_ino, 43);
+	Log::Information("Initialized Logger, Initializing DGWatch system", DGWatch_ino, __LINE__);
 
-	Log::Verbose("Initializing Timer...", DGWatch_ino, 47);
+	Log::Verbose("Initializing Timer...", DGWatch_ino, __LINE__);
 	timer = new Timer<TIMER_TASKS>();
 
-	Log::Verbose("Obtaining Watch handler", DGWatch_ino, 50);
+	Log::Verbose("Obtaining Watch handler", DGWatch_ino, __LINE__);
 	ttgo = TTGOClass::getWatch();
 
-	Log::Verbose("Starting Watch", DGWatch_ino, 53);
+	Log::Verbose("Starting Watch", DGWatch_ino, __LINE__);
 	ttgo->begin();
 
-	Log::Verbose("Initializing LVGL", DGWatch_ino, 56);
+	Log::Verbose("Initializing LVGL", DGWatch_ino, __LINE__);
 	ttgo->lvgl_begin();
 
-	//Check if the RTC clock matches, if not, use compile time
-	Log::Debug("Checking RTC Clock", DGWatch_ino, 60);
+	Log::Debug("Checking RTC Clock", DGWatch_ino, __LINE__);
 	ttgo->rtc->check();
 
-	Log::Debug("Synching System to RTC", DGWatch_ino, 63);
+	Log::Debug("Synching System to RTC", DGWatch_ino, __LINE__);
 	ttgo->rtc->syncToRtc();
 
 	//app pre init
 	{
-		Log::Information("PreInitializing Apps", DGWatch_ino, 76);
+		Log::Information("PreInitializing Apps", DGWatch_ino, __LINE__);
 		App::PreInitializationArguments_t args;
 		for (int i = 0; i < AppCount; i++) {
-			Log::Debug(String("PreInitializing app: ") + AppList[i]->Name, DGWatch_ino, 80);
+			Log::Debug(String("PreInitializing app: ") + AppList[i]->Name, DGWatch_ino, __LINE__);
 			AppList[i]->PreInitialize(args);
 		}
 	}
-	Log::Information("Starting all StartUp Apps", DGWatch_ino, 83);
+	Log::Information("Starting all StartUp Apps", DGWatch_ino, __LINE__);
 	for (int i = 0; i < AppCount; i++)
 		if (AppList[i]->StartUp)
 			AppList[i]->Start(nullptr);
@@ -111,7 +113,7 @@ int main() {
 		delay(100);
 	}
 	char* str = nullptr;
-	Log::Fatal("Running loop broke unexpectedly", DGWatch_ino, 74);
+	Log::Fatal("Running loop broke unexpectedly", DGWatch_ino, __LINE__);
 	Log::ForceFlush();
 	delay(5000);
 	abort();
