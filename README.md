@@ -7,6 +7,7 @@ A repository to store my personal implementation for a LilyGo TTGO ESP32 TWatch
 - [TTGO TWatch Library](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/)
 - [Arduino FreeRTOS Library](https://github.com/feilipu/Arduino_FreeRTOS_Library)
 - [Arduino Timer](https://github.com/contrem/arduino-timer)
+- [ArduinoJson](https://arduinojson.org/) (Already included)
 
 ## Usage
 

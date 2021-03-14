@@ -36,16 +36,13 @@ struct System_Status_t {
     bool FirstRun : 1;
     bool Edited : 1;
     bool CorrectlyShutDown : 1;
+    bool SystemLock : 1;
     String GetFormatted() {
         String str = "SysStatus: ";
         return str + "FirstRun(" + FirstRun + ") | CorrectlyShutDown(" + CorrectlyShutDown + ")";
     }
     System_Status_t() {
-#ifdef DEBUG
-        FirstRun = false;
-#else
         FirstRun = true;
-#endif
         CorrectlyShutDown = false;
         Edited = false;
     }

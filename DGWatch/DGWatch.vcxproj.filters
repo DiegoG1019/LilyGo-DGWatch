@@ -79,11 +79,11 @@
     <ClInclude Include="Queue.h">
       <Filter>Inlined Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="RenderManager.h">
-      <Filter>Controls\Headers</Filter>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Apps\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="SemaphoreLock.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SyncLock.h">
+      <Filter>Inlined Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -96,8 +96,8 @@
     <ClCompile Include="Log.cpp">
       <Filter>Controls\Source</Filter>
     </ClCompile>
-    <ClCompile Include="RenderManager.cpp">
-      <Filter>Controls\Source</Filter>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Apps\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
