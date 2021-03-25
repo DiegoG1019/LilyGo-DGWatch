@@ -3,7 +3,6 @@
 
 #include "Task.h"
 
-constexpr char* AppFileName = "App.cpp";
 void AppTaskCode(void* params);
 class App {
 public:
@@ -17,8 +16,8 @@ public:
     const char *Name;
     const int& Priority;
     const int& StackSize;
-    const int& CoreID;
     const bool& IsRunning;
+    const int& CoreID;
     const bool& StartUp;
     App(const App&) = delete;
     App(const char* name, int priority, int stacksize, int coreid = tskNO_AFFINITY) : Priority(_Priority), StackSize(_StackSize), IsRunning(_IsRunning), CoreID(_CoreID), StartUp(_StartUp)

@@ -1,5 +1,19 @@
 #include "Log.h"
 
+Log::Log(Log::LogLevel level): App("LogManagerApp", HIGH_PRIORITY, 5, PRIMARY_CORE){
+	_StartUp = true;
+
+	FlushLogTimer = 0;
+	IgnoreNextTimerCall = 0;
+
+	MessageBuffer = new ArraySequence<Message>(LOG_MESSAGE_BUFFER_SIZE, false, true);
+	WorkingBuffer = new ArraySequence<Message>(LOG_MESSAGE_BUFFER_SIZE, false, true);
+	FlushLimit = (3 * LOG_MESSAGE_BUFFER_SIZE) / 4;
+	Level = level;
+
+	WriteMessageSync = new SyncLock();
+};
+
 void Log::Initialize(void* params) {
 	Log::Information("Initialized LogManager App", "Log.h", 17);
 	timer->in(LOG_FLUSH_TIMER, FlushTimer, this);
@@ -102,20 +116,6 @@ void Log::ForceFlush() {
 	WriteMessageSync->Unlock();
 }
 
-void Log::makemsg(String dat, const char* filename, int16_t linenumber, Log::LogLevel lv) {
-	WriteMessageSync->Lock();
-	Message* msg = MessageBuffer->Next();
-	WriteMessageSync->Unlock();
-	msg->Filename = filename;
-	msg->Linenumber = linenumber;
-	msg->MessageDat = dat;
-	msg->Level = lv;
-	msg->IssueDate = ttgo->rtc->formatDateTime();
-#ifdef DEBUG
-	msg->FreeMem = Debug::FreeRam();
-#endif
-}
-
 const char* Log::LevelString(Log::LogLevel lv) {
 	const const char* strs[]{
 		"FTL",
@@ -139,42 +139,3 @@ int Log::GetFlushLimit() {
 bool Log::GetIsFlushing() {
 	return Log::_IsFlushing;
 }
-
-void Log::Fatal(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	makemsg(dat, filename, defaultlinenumber, LogLevel::Fatal);
-};
-
-void Log::Error(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	if (Level < LogLevel::Error) {
-		return;
-	}
-	makemsg(dat, filename, defaultlinenumber, LogLevel::Error);
-};
-
-void Log::Warning(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	if (Level < LogLevel::Warning) {
-		return;
-	}
-	makemsg(dat, filename, defaultlinenumber, LogLevel::Warning);
-};
-
-void Log::Information(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	if (Level < LogLevel::Information) {
-		return;
-	}
-	makemsg(dat, filename, defaultlinenumber, LogLevel::Information);
-};
-
-void Log::Debug(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	if (Level < LogLevel::Debug) {
-		return;
-	}
-	makemsg(dat, filename, defaultlinenumber, LogLevel::Debug);
-};
-
-void Log::Verbose(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	if (Level < LogLevel::Verbose) {
-		return;
-	}
-	makemsg(dat, filename, defaultlinenumber, LogLevel::Verbose);
-};

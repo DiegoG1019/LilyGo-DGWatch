@@ -6,7 +6,6 @@
 #define LILYGO_WATCH_2020_V1              // Use T-Watch2020
 #define LILYGO_WATCH_LVGL 
 
-#define _LOG_VERBOSITY Information
 #define DEBUG
 #ifdef DEBUG
 #define LOG_RAM
@@ -14,6 +13,8 @@
 #define LOG_BATTERY_REPORTS
 #define _LOG_VERBOSITY Verbose
 #endif
+
+#include "WString.h"
 
 constexpr int LOG_MESSAGE_BUFFER_SIZE = 80;
 constexpr int LOG_FLUSH_TIMER = 10000;
@@ -52,7 +53,6 @@ struct System_Status_t {
     };
 private:
     inline void edit(String str, int value) {
-        Log::Debug(str + "Was changed to: " + value, "config.h", 58);
         Edited = true; 
     };
 };
@@ -68,5 +68,9 @@ struct {
     } Version;
     const char* Name = "DGWatch";
 } System_Info;
+
+inline int MemoryUnits(int bytes, int unit = 1) {
+    return bytes / (1024 * unit);
+}
 
 #endif

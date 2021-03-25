@@ -1,6 +1,8 @@
 #ifndef DGTASK_H
 #define DGTASK_H
 
+#include <FreeRTOS.h>
+
 class Task {
 private:
     BaseType_t _TaskID;
@@ -18,7 +20,7 @@ public:
     {
         Name = pcName;
         _TaskID = xTaskCreate(pvTaskCode, pcName, usStackDepth, pvParameters, uxPriority, TaskHandle);
-    };
+    }
     Task(
         TaskFunction_t pvTaskCode,
         const char* const pcName,
@@ -29,7 +31,7 @@ public:
     {
         Name = pcName;
         _TaskID = xTaskCreatePinnedToCore(pvTaskCode, pcName, usStackDepth, pvParameters, uxPriority, TaskHandle, xCoreID);
-    };
+    }
     void Terminate() {
         vTaskDelete(TaskHandle);
     }

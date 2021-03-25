@@ -2,6 +2,8 @@
 #define BATTERYAPP_H
 
 #include "App.h"
+#include "config/global.h"
+#include "config/errors.h"
 
 class BatteryApp : public App {
 private:

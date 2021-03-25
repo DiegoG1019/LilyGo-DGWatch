@@ -2,6 +2,7 @@
 #define ICONBAR_H
 
 #include "App.h"
+#include <LilyGoWatch.h>
 
 class MainMenu : public App
 {
@@ -34,7 +35,7 @@ public:
 		lv_area_set(_BatteryBarSize, 0, 0, 240, 3);
 	}
 
-	//Icon Bar Size 240 x 320
+	//Icon Bar Size 240 x 240
 	//It is assumed that IconBar is set to the top of the screen, and it's horizontal axis is elongated to the screen's size
 	static int BarSize; //Its height
 	static int ItemSize; //Size of each item along the size of the Bar. Each Item is allowed to take as much horizontal space as it needs.

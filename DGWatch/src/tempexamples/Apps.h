@@ -1,4 +1,7 @@
-#pragma once
+#ifndef APPS_H
+#define APPS_h
+#include "config/global.h"
+
 class Apps
 {
     ttgo->tft->fillScreen(TFT_BLACK);
@@ -31,3 +34,5 @@ class Apps
     //Clear screen 
     ttgo->tft->fillScreen(TFT_BLACK);
 };
+
+#endif
