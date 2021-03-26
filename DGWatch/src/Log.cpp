@@ -1,16 +1,16 @@
 #include "Log.h"
+#include <new>
 
-Log::Log(Log::LogLevel level): App("LogManagerApp", HIGH_PRIORITY, 5, PRIMARY_CORE){
+Log::Log(): App("LogManagerApp", HIGH_PRIORITY, 5, PRIMARY_CORE){
+	ttgo = TTGOClass::getWatch();
 	_StartUp = true;
 
 	FlushLogTimer = 0;
 	IgnoreNextTimerCall = 0;
 
-	MessageBuffer = new ArraySequence<Message>(LOG_MESSAGE_BUFFER_SIZE, false, true);
-	WorkingBuffer = new ArraySequence<Message>(LOG_MESSAGE_BUFFER_SIZE, false, true);
+	MessageBuffer = ps_new (ArraySequence<Message>, LOG_MESSAGE_BUFFER_SIZE, false, true);
+	WorkingBuffer = ps_new (ArraySequence<Message>, LOG_MESSAGE_BUFFER_SIZE, false, true);
 	FlushLimit = (3 * LOG_MESSAGE_BUFFER_SIZE) / 4;
-	Level = level;
-
 	WriteMessageSync = new SyncLock();
 };
 
@@ -71,19 +71,14 @@ void Log::Flush(){
 }
 
 void Log::OutputSerial(Message* msg, int i) {
-#define P Serial.print
-#define PL Serial.println
-#ifdef DEBUG
-	P("Buffer["); P(i); PL(']');
-#endif
-	P(msg->IssueDate); P(" ["); P(Log::LevelString(msg->Level)); P("] ");
-	P(msg->Filename); P("@"); P(msg->Linenumber); P(" :: "); P(msg->MessageDat);
-#ifdef LOG_RAM
-	P(" | FreeMem: "); P(MemoryUnits(msg->FreeMem, 2)); P("MB");
-#endif
-	PL();
-#undef P
-#undef PL
+	Serial.printf(LOGFORMAT( 
+			i, 
+			msg->IssueDate,
+			Log::LevelString(msg->Level),
+			msg->Filename,
+			msg->Linenumber,
+			msg->MessageDat,
+			MemoryUnits(msg->FreeMem, 2)));
 }
 
 void Log::ForceFlush() {
@@ -96,21 +91,18 @@ void Log::ForceFlush() {
 	for (int i = 0; i < WorkingBuffer->Index; i++) {
 		msg = WorkingBuffer->GetPointer(i);
 		//Output the logs somewhere...
-		if (Serial) {
+		if (Serial)
 			OutputSerial(msg, i);
-		}
 	}
 	WorkingBuffer->Index = 0;
 
-	if (Serial) {
+	if (Serial)
 		Serial.println("Message Buffer flush");
-	}
 	for (int i = 0; i < MessageBuffer->Index; i++) {
 		msg = MessageBuffer->GetPointer(i);
 		//Output the logs somewhere...
-		if (Serial) {
+		if (Serial)
 			OutputSerial(msg, i);
-		}
 	}
 	MessageBuffer->Index = 0;
 	WriteMessageSync->Unlock();

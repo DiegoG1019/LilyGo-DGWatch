@@ -11,10 +11,16 @@ A Smart Watch Firmware for the LilyGo T-Watch 2020 v1 based on the ESP32, under 
 
 ## Usage
 Load this project with [PlatformIO](https://platformio.org/), build and upload.
-- [Install PlatformIO](https://docs.platformio.org/en/latest/core/installation.html#piocore-install-shell-commands)
+[Install PlatformIO](https://docs.platformio.org/en/latest/core/installation.html#piocore-install-shell-commands)
 
 ## Showcase
 <b>Under Construction</b>
+
+## Known Issues
+None so far, if you find any, please open an issue in the issue tracker
+
+## Feature Requests
+...Are welcome! Please provide your feature request in the issue tracker
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

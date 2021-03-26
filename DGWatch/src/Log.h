@@ -13,6 +13,19 @@
 constexpr auto defaultfilename = "Unspecified.";
 constexpr auto defaultlinenumber = -1;
 
+#ifdef DEBUG
+	#ifdef LOG_RAM
+		constexpr auto __log_format = "{%d} (%s) [%s] %s@%d :: %s | FreeMem: %dMB\n";
+		#define LOGFORMAT(...) __log_format, __VA_ARGS__
+	#else
+		constexpr auto __log_format = "{%d} (%s) [%s] %s@%d :: %s\n";
+		#define LOGFORMAT(...) __log_format, __VA_ARGS__ 
+	#endif
+#else
+	constexpr auto __log_format = "(%s) [%s] %s@%d :: %s\n";
+	#define LOGFORMAT(...) __log_format, __VA_ARGS__ 
+#endif
+
 class Log : public App
 {
 public:
@@ -25,10 +38,11 @@ public:
 		Debug = 4,
 		Verbose = 5
 	};
-	Log(Log::LogLevel level);
+	Log();
 	void Initialize(void* params);
 	void Run();
 private:
+	static TTGOClass* ttgo;
 	static bool FlushTimer(void* opaque);
 	unsigned int FlushLogTimer : 1;
 	unsigned int IgnoreNextTimerCall : 1;
@@ -45,7 +59,6 @@ private:
 	};
 
 	static void OutputSerial(Message* msg, int i);
-	
 
 	static ArraySequence<Message>* MessageBuffer;
 	/// <summary>
@@ -62,50 +75,42 @@ private:
 		msg->MessageDat = dat;
 		msg->Level = lv;
 		msg->IssueDate = ttgo->rtc->formatDateTime();
-	#ifdef DEBUG
 		msg->FreeMem = ESP.getFreeHeap();
-	#endif
 	};
 public:
-	static LogLevel Level;
-
 	inline static const char* LevelString(Log::LogLevel lv);
 	inline static int GetBufferIndex();
 	inline static int GetFlushLimit();
 	inline static bool GetIsFlushing();
-
+	
 	inline static void Fatal(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Fatal);
 	};
+	
 	inline static void Error(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-		if (Level < LogLevel::Error) {
-			return;
-		}
+	#if _LOG_VERBOSITY >= LogLevel::Error
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Error);
+	#endif
 	};
 	inline static void Warning(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber){
-		if (Level < LogLevel::Warning) {
-			return;
-		}
+	#if _LOG_VERBOSITY >= LogLevel::Warning
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Warning);
+	#endif
 	};
 	inline static void Information(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-		if (Level < LogLevel::Information) {
-			return;
-		}
+	#if _LOG_VERBOSITY >= LogLevel::Information
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Information);
+	#endif
 	};
 	inline static void Debug(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber){
-		if (Level < LogLevel::Debug) {
-			return;
-		}
+	#if _LOG_VERBOSITY >= LogLevel::Debug
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Debug);
+	#endif
 	};
 	inline static void Verbose(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-		if (Level < LogLevel::Verbose) {
-			return;
-		}
+	#if _LOG_VERBOSITY >= LogLevel::Verbose
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Verbose);
+	#endif
 	};
 
 	/// <summary>

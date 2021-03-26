@@ -4,23 +4,36 @@
  Author:	Diego Garcia
 */
 
-#include <Arduino.h>
 #include "config/config.h"
+#include "config/global.h"
+#include <Arduino.h>
+#include "esp_bt.h"
+#include "esp_task_wdt.h"
 #include <LilyGoWatch.h>
 #include <arduino-timer.h>
 #include "Log.h"
 #include "BatteryApp.h"
 #include "StaticList.h"
 #include "MainMenu.h"
-#include "config/global.h"
+
+#include "hardware/display.h"
+#include "hardware/powermgm.h"
+#include "hardware/motor.h"
+#include "hardware/wifictl.h"
+#include "hardware/blectl.h"
+#include "hardware/pmu.h"
+#include "hardware/timesync.h"
+#include "hardware/sound.h"
+#include "hardware/callback.h"
 
 constexpr const int AppCount = 3;
+
 constexpr const int LogManagerID = 0;
 constexpr const int BatteryAppID = 1;
 constexpr const int MainMenuAppID = 2;
 
 App* AppList[AppCount]{
-	new Log(Log::LogLevel::_LOG_VERBOSITY),
+	new Log(),
 	new BatteryApp(),
 	new MainMenu(),
 };
@@ -30,42 +43,10 @@ void startlog() {
 	AppList[LogManagerID]->Start(nullptr);
 }
 
-bool LoadSystemStatus(){
-	Log::Information("Attempting to load System_Status data from Flash Memory", __FILE__, __LINE__);
-	uint32_t* addrs = reinterpret_cast<uint32_t*>(&System_Status);
-	ESP.flashRead(reinterpret_cast<uintptr_t>(&System_Status_FLASH), addrs, sizeof(System_Status_t));
-	Log::Information(System_Status.GetFormatted(), __FILE__, __LINE__);
-	bool csd = System_Status.CorrectlyShutDown;
-	System_Status.CorrectlyShutDown = false;
-	return csd;
-}
-
-void SaveSystemStatus() {
-	Log::Information("Attempting to save System_Status data to Flash Memory", __FILE__, __LINE__);
-	if (!System_Status.Edited) {
-		Log::Information("System_Settings has not been edited, no need to save.", __FILE__, __LINE__);
-		return;
-	}
-	System_Status.CorrectlyShutDown = true;
-	ESP.flashWrite(reinterpret_cast<uintptr_t>(&System_Status_FLASH), reinterpret_cast<uint32_t*>(&System_Status), sizeof(System_Status_t));
-	Log::Information("Succesfully saved System_Status data to Flash Memory", __FILE__, __LINE__);
-}
-
-void ForceShutDown() {
-	Log::ForceFlush();
-	abort();
-};
-
-void DeepSleep() {
-	SaveSystemStatus();
-	Log::ForceFlush();
-	ESP.deepSleep(UINT32_MAX);
-};
-
 int main() {
 	init();
 	//-------Initialization
-
+	ttgo = TTGOClass::getWatch();
 	startlog();
 	Log::Information("Initialized Logger, Initializing DGWatch system", __FILE__, __LINE__);
 

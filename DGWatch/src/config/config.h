@@ -14,6 +14,9 @@
 #define _LOG_VERBOSITY Verbose
 #endif
 
+#include <new>
+#define ps_new(T, ... ) new (ps_malloc(sizeof(T))) T(__VA_ARGS__ );
+
 #include "WString.h"
 
 constexpr int LOG_MESSAGE_BUFFER_SIZE = 80;
