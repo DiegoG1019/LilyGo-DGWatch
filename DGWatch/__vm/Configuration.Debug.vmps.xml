@@ -1,6 +1,0 @@
-<VisualMicro>
-  <Program Name="DGWatch" Ext=".ino" Location="C:\Users\Diego Garcia\Documents\Workspace\Programming\LilyGoWatch\DGWatch">
-    <Debug JumpToSource="1" />
-    <Compile ReportDisassembledView="1" ReportDetailedMemoryUsage="1" />
-  </Program>
-</VisualMicro>
