@@ -104,7 +104,6 @@ int main() {
 	//-------Running loop
 	while (1) {
 		timer->tick();
-		ESP.deepSleep(100);
 	}
 	Log::Fatal("Running loop broke unexpectedly", __FILE__, __LINE__);
 	Log::ForceFlush();
