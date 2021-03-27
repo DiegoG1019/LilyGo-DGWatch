@@ -6,18 +6,23 @@
 #define LILYGO_WATCH_2020_V1              // Use T-Watch2020
 #define LILYGO_WATCH_LVGL 
 
+#define TWATCH_USE_PSRAM_ALLOC_LVGL
+
 #define DEBUG
+
 #ifdef DEBUG
-#define LOG_RAM
-#define LOG_DEBUG
-#define LOG_BATTERY_REPORTS
-#define _LOG_VERBOSITY Verbose
+    #define LOG_RAM
+    #define LOG_DEBUG
+    #define LOG_BATTERY_REPORTS
+    #define _LOG_VERBOSITY Verbose
 #endif
 
 #include <new>
-#define ps_new(T, ... ) new (ps_malloc(sizeof(T))) T(__VA_ARGS__ );
+#define ps_new(T, ... ) new (ps_malloc(sizeof(T))) T(__VA_ARGS__);
 
 #include "WString.h"
+
+constexpr auto SERIAL_BAUDRATE = 115200;
 
 constexpr int LOG_MESSAGE_BUFFER_SIZE = 80;
 constexpr int LOG_FLUSH_TIMER = 10000;
@@ -36,11 +41,11 @@ constexpr int HIGH_PRIORITY = 2;
 /// </summary>
 constexpr int LOW_CPU_TIME = 3;
 
-struct System_Status_t {
+class System_Status_t {
     bool FirstRun : 1;
     bool Edited : 1;
     bool CorrectlyShutDown : 1;
-    bool SystemLock : 1;
+public:
     String GetFormatted() {
         String str = "SysStatus: ";
         return str + "FirstRun(" + FirstRun + ") | CorrectlyShutDown(" + CorrectlyShutDown + ")";
@@ -54,10 +59,9 @@ struct System_Status_t {
         Edited = true;
         CorrectlyShutDown = true;
     };
-private:
-    inline void edit(String str, int value) {
-        Edited = true; 
-    };
+    bool IsFirstRun(){ return FirstRun; }
+    bool WasEdited(){ return Edited; }
+    bool WasCorrectlyShutDown(){ return CorrectlyShutDown; }
 };
 PROGMEM System_Status_t System_Status_FLASH;
 System_Status_t System_Status;
@@ -71,9 +75,5 @@ struct {
     } Version;
     const char* Name = "DGWatch";
 } System_Info;
-
-inline int MemoryUnits(int bytes, int unit = 1) {
-    return bytes / (1024 * unit);
-}
 
 #endif

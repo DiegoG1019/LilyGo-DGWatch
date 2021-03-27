@@ -36,7 +36,7 @@ public:
     }
     BatteryApp() : App("BatteryDisplay", LOW_CPU_TIME, 5, SECONDARY_CORE) {
         _StartUp = true;
-        ReportsBuffer = new ArraySequence<BatteryReport>(ReportBufferSize, false, true);
+        ReportsBuffer = ps_new(ArraySequence<BatteryReport>, ReportBufferSize, false, true);
     };
     void PreInitialize(PreInitializationArguments_t params);
     void Initialize(void*);

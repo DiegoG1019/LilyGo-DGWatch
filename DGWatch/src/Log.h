@@ -69,9 +69,11 @@ private:
 	inline static void makemsg(String dat, const char* filename, int16_t linenumber, Log::LogLevel lv) {
 		WriteMessageSync->Lock();
 		Message* msg = MessageBuffer->Next();
+		
 		WriteMessageSync->Unlock();
 		msg->Filename = filename;
 		msg->Linenumber = linenumber;
+		msg->MessageDat.~String();
 		msg->MessageDat = dat;
 		msg->Level = lv;
 		msg->IssueDate = ttgo->rtc->formatDateTime();
@@ -88,27 +90,27 @@ public:
 	};
 	
 	inline static void Error(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	#if _LOG_VERBOSITY >= LogLevel::Error
+	#if _LOG_VERBOSITY >= Error
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Error);
 	#endif
 	};
 	inline static void Warning(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber){
-	#if _LOG_VERBOSITY >= LogLevel::Warning
+	#if _LOG_VERBOSITY >= Warning
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Warning);
 	#endif
 	};
 	inline static void Information(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	#if _LOG_VERBOSITY >= LogLevel::Information
+	#if _LOG_VERBOSITY >= Information
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Information);
 	#endif
 	};
 	inline static void Debug(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber){
-	#if _LOG_VERBOSITY >= LogLevel::Debug
+	#if _LOG_VERBOSITY >= Debug
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Debug);
 	#endif
 	};
 	inline static void Verbose(String dat, const char* filename = defaultfilename, int16_t linenumber = defaultlinenumber) {
-	#if _LOG_VERBOSITY >= LogLevel::Verbose
+	#if _LOG_VERBOSITY >= Verbose
 		makemsg(dat, filename, defaultlinenumber, LogLevel::Verbose);
 	#endif
 	};

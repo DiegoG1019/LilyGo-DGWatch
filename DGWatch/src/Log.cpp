@@ -20,23 +20,25 @@ void Log::Initialize(void* params) {
 };
 
 void Log::Run() {
+	while(1){
 start:;
-	delay(1000);
-	if (Log::GetBufferIndex() >= Log::GetFlushLimit()) {
-		IgnoreNextTimerCall = 1;
-		goto doflush;
-	}
-	if (FlushLogTimer) {
-		FlushLogTimer = 0;
-		if (IgnoreNextTimerCall) {
-			IgnoreNextTimerCall = 0;
-			goto start;
+		delay(1000);
+		if (Log::GetBufferIndex() >= Log::GetFlushLimit()) {
+			IgnoreNextTimerCall = 1;
+			goto doflush;
 		}
-		goto doflush;
-	};
-	goto start;
+		if (FlushLogTimer) {
+			FlushLogTimer = 0;
+			if (IgnoreNextTimerCall) {
+				IgnoreNextTimerCall = 0;
+				goto start;
+			}
+			goto doflush;
+		};
+		goto start;
 doflush:;
-	Log::Flush();
+		Log::Flush();
+	}
 };
 
 bool Log::FlushTimer(void* opaque) {

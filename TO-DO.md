@@ -1,7 +1,5 @@
 # To-do List
--Add a Firmware Version definition (or constexpr)
 -Plan out how screen 'ownership' will be managed
--Change how psnew works (turn it into a macro)
 -Model the main menu
 -Implement Bluetooth
 -Implement WiFi
