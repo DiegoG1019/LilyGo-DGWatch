@@ -34,7 +34,7 @@ public:
     inline static BatteryReport* GetLatest() {
         return latest;
     }
-    BatteryApp() : App("BatteryDisplay", LOW_CPU_TIME, 5, SECONDARY_CORE) {
+    BatteryApp() : App("BatteryDisplay", LOW_CPU_TIME, 5, PRIMARY_CORE) {
         _StartUp = true;
         ReportsBuffer = ps_new(ArraySequence<BatteryReport>, ReportBufferSize, false, true);
     };

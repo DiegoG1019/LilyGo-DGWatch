@@ -11,13 +11,13 @@
 #include "esp_task_wdt.h"
 #include <LilyGoWatch.h>
 #include <arduino-timer.h>
+#include "StaticList.h"
+
 #include "Log.h"
 #include "BatteryApp.h"
-#include "StaticList.h"
-#include "MainMenu.h"
-
-#include "gui/gui.h"
-#include "gui/screenshot.h"
+#include "NetworkManager.h"
+#include "gui/DisplayManagerApp.h"
+#include "gui/MainMenu.h"
 
 #include "hardware/display.h"
 #include "hardware/powermgm.h"
@@ -29,22 +29,26 @@
 #include "hardware/sound.h"
 #include "hardware/callback.h"
 
-constexpr const int AppCount = 3;
+constexpr const int AppCount = 5;
 
 constexpr const int LogManagerID = 0;
 constexpr const int BatteryAppID = 1;
-constexpr const int MainMenuAppID = 2;
+constexpr const int NetworkManagerID = 2;
+constexpr const int DisplayManagerID = 3;
+constexpr const int MainMenuID = 4;
 
-App *AppList[AppCount]{
+App *Apps[AppCount]{
 	new (ps_malloc(sizeof(Log))) Log(),
 	new (ps_malloc(sizeof(BatteryApp))) BatteryApp(),
+	new (ps_malloc(sizeof(NetworkManager))) NetworkManager(),
+	new (ps_malloc(sizeof(DisplayManager))) DisplayManager(),
 	new (ps_malloc(sizeof(MainMenu))) MainMenu()
 };
 
 void startlog()
 {
-	AppList[LogManagerID]->Initialize(nullptr);
-	AppList[LogManagerID]->Start(nullptr);
+	Apps[LogManagerID]->Initialize(nullptr);
+	Apps[LogManagerID]->Start(nullptr);
 }
 
 constexpr auto Main_Filename = __FILE__;
@@ -59,8 +63,8 @@ int main()
 	//I want these buffers to go out of scope
 	{
 		//name_max + tag_max + format + 3 digits for each version portion
-		char buff[16 + 16 + 24 + (3*3)];
-		sprintf(buff,"Runing %s v.%d.%d.%d-%s", System_Info.Name, System_Info.Version.Major, System_Info.Version.Build, System_Info.Version.Review, System_Info.Version.Tag);
+		char buff[16 + 16 + 24 + (3*4)];
+		sprintf(buff,"Running firmware %s v.%d.%d.%d.%d-%s", System_Info.Name, System_Info.Version.Major, System_Info.Version.Minor, System_Info.Version.Build, System_Info.Version.Review, System_Info.Version.Tag);
 		Log::Information(buff, Main_Filename, __LINE__);
 	}
 
@@ -93,12 +97,6 @@ int main()
 	Log::Debug("Setting up motor", Main_Filename, __LINE__);
 	motor_setup();
 
-	Log::Debug("Setting up display", Main_Filename, __LINE__);
-	display_setup();
-
-	Log::Verbose("Setting up Screenshots", Main_Filename, __LINE__);
-	screenshot_setup();
-
 	Log::Debug("Making sure SPIFFS is active", Main_Filename, __LINE__);
 	if (!SPIFFS.begin())
 	{
@@ -121,14 +119,14 @@ int main()
 		App::PreInitializationArguments_t args;
 		for (int i = 0; i < AppCount; i++)
 		{
-			Log::Debug(String("PreInitializing app: ") + AppList[i]->Name, Main_Filename, __LINE__);
-			AppList[i]->PreInitialize(args);
+			Log::Debug(String("PreInitializing app: ") + Apps[i]->Name, Main_Filename, __LINE__);
+			Apps[i]->PreInitialize(args);
 		}
 	}
 	Log::Information("Starting all StartUp Apps", Main_Filename, __LINE__);
 	for (int i = 0; i < AppCount; i++)
-		if (AppList[i]->StartUp)
-			AppList[i]->Start(nullptr);
+		if (Apps[i]->StartUp)
+			Apps[i]->Start(nullptr);
 
 	//-------Running loop
 	while (1)

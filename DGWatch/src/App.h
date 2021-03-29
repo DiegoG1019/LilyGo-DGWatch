@@ -83,19 +83,19 @@ public:
     /// Activation process of the App when it should take hold of the screen
     /// </summary>
     /// <param name="params"></param>
-    virtual void Activate(void* params);
+    virtual void BuildGUI(void* params){}
 
     /// <summary>
     /// The running process of the App while it's active (on-screen)
     /// </summary>
     /// <param name="params"></param>
-    virtual void Active(void* params); //Pure Virtual
+    virtual void Render(void* params){}
 
     /// <summary>
     /// The function to be called once the application deactivates
     /// </summary>
     /// <param name="params"></param>
-    virtual void Deactivate(void* params);
+    virtual void DestroyGUI(void* params){}
 
     /// <summary>
     /// If overriden, call this at the end of the overriding method. This deletes the task.

@@ -41,6 +41,12 @@ constexpr int HIGH_PRIORITY = 2;
 /// </summary>
 constexpr int LOW_CPU_TIME = 3;
 
+constexpr int STACK_SIZE_SMALL = 15;
+constexpr int STACK_SIZE_MED = 45;
+constexpr int STACK_SIZE_LARGE = 70;
+constexpr int STACK_SIZE_HUGE = 110;
+
+
 class System_Status_t {
     bool FirstRun : 1;
     bool Edited : 1;
@@ -69,8 +75,9 @@ System_Status_t System_Status;
 struct {
     struct {
         const uint8_t Major = 0;
-        const uint8_t Review = 0;
+        const uint8_t Minor = 0;
         const uint8_t Build = 0;
+        const uint8_t Review = 1;
         const char* Tag = "Alpha";
     } Version;
     const char* Name = "DGWatch";
